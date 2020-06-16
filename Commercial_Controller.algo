@@ -1,0 +1,13 @@
+
+
+SEQUENCE
+
+END SEQUENCE
+
+SEQUENCE
+
+END SEQUENCE 
+
+
+
+CALL requestElevator WITH 3 AND DONW

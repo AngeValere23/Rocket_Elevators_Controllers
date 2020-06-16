@@ -1,0 +1,23 @@
+
+
+SEQUENCE findBestElevator USING currentFloor AND direction
+    
+END SEQUENCE
+
+SEQUENCE requestElevator USING currentFloor AND direction
+    CALL findBestElevator WITH currentFloor AND direction
+    CALL moveElevator
+    CALL openDoors
+END SEQUENCE 
+
+
+SEQUENCE requestFloor  USING requestedElevator
+    closeDoors
+    moveElevator
+    openDoors
+END SEQUENCE 
+
+
+//Scenario 1
+CALL requestElevator WITH 3 AND down
+
