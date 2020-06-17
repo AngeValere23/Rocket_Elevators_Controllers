@@ -1,7 +1,13 @@
 
 
 SEQUENCE findBestElevator USING currentFloor AND direction
-    
+    SET difference between floorCall and currentElevatorFloor
+        FOR all the elevator in the column
+            IF floorCall - currentElevatorFloor is lowest THEN
+                GET elevator ID OF this distance
+                    INCREMENT moveCount
+            END IF
+        END FOR         
 END SEQUENCE
 
 SEQUENCE requestElevator USING currentFloor AND direction
