@@ -50,3 +50,5 @@ END SEQUENCE
 
 //Scenario 1
 CALL requestElevator WITH 3 AND down
+
+
