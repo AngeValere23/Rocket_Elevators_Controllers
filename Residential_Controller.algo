@@ -4,11 +4,35 @@ SEQUENCE findBestElevator USING currentFloor AND direction
     SET difference between floorCall and currentElevatorFloor
         FOR all the elevator in the column
             IF floorCall - currentElevatorFloor is lowest THEN
-                GET elevator ID OF this distance
+                GET elevator ID OF this distance TO currentElevatorFloor direction
                     INCREMENT moveCount
             END IF
-        END FOR         
+            CALL moveElevator
+        END FOR 
+        return elevator        
 END SEQUENCE
+
+SEQUENCE moveElevator USING floorNumber AND direction
+    WHILE currentFloor is different than Destination
+        MOVE ElevatorCageNumber TO direction
+        IF direction equal up OR down AND floorNumber equal currentFloor THEN
+            REMOVE floorNumber
+        ELSE 
+            DISPLAY floorNumber    
+        END IF  
+        INCREMENT Currentfloor  
+        CALL openDoors 
+    ENDWHILE
+END SEQUENCE
+
+SEQUENCE openDoors USING buttonCall AND currentFloor
+    SET buttonCall Light Status TO ON WITH GoTo_Direction
+        WHILE buttonCall equal pressed
+            CALL moveElevator TO currentFloor
+            DISPLAY currentfloor WITH ElevatorCageNumber
+        END WHILE
+
+END SEQUENCE 
 
 SEQUENCE requestElevator USING currentFloor AND direction
     CALL findBestElevator WITH currentFloor AND direction
@@ -27,3 +51,6 @@ END SEQUENCE
 //Scenario 1
 CALL requestElevator WITH 3 AND down
 
+if (call.getType() == 0 && call.getFloor() == this.currentFloor){
+                this.sequence.remove(call);
+            }
