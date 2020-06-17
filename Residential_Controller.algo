@@ -4,7 +4,7 @@ SEQUENCE findBestElevator USING currentFloor AND direction
     SET difference between floorCall and currentElevatorFloor
         FOR all the elevator in the column
             IF floorCall - currentElevatorFloor is lowest THEN
-                GET elevator ID OF this distance TO currentElevatorFloor direction
+                GET elevator ID OF this distance TO floorCall direction
                     INCREMENT moveCount
             END IF
             CALL moveElevator
@@ -25,26 +25,49 @@ SEQUENCE moveElevator USING floorNumber AND direction
     ENDWHILE
 END SEQUENCE
 
-SEQUENCE openDoors USING buttonCall AND currentFloor
-    SET buttonCall Light Status TO ON WITH GoTo_Direction
-        WHILE buttonCall equal pressed
+SEQUENCE openDoors USING FloorCallButton AND currentFloor
+    SET FloorCallButton Light Status TO ON WITH GoTo_Direction
+        WHILE FloorCallButton equal pressed
             CALL moveElevator TO currentFloor
             DISPLAY currentfloor WITH ElevatorCageNumber
         END WHILE
 
 END SEQUENCE 
 
+
 SEQUENCE requestElevator USING currentFloor AND direction
     CALL findBestElevator WITH currentFloor AND direction
-    CALL moveElevator
-    CALL openDoors
+    CALL moveElevator  WITH floorNumber AND direction
+    CALL openDoors  WITH FloorCallButton AND currentFloor
 END SEQUENCE 
 
+SEQUENCE closeDoors USING elevatorCageButton 
+        FOR all the elevatorCageButton in ElevatorCage
+            IF requestFloorButton equal pressed THEN
+                close the doors
+                CALL moveElevator
+            END IF
+        END FOR        
+END SEQUENCE 
+
+SEQUENCE moveElevator USING elevatorCageButton AND requestedFloor
+    SET elevatorCageButton Light Status TO ON WITH floorNumber
+    WHILE elevatorCageButton equal pressed
+           MOVE ElevatorCageNumber TO requestedFloor
+            DISPLAY currentfloor WITH floorNumber
+    END WHILE
+END SEQUENCE 
+
+SEQUENCE openDoors USING currentFloor
+    IF requestedFloor equal currentFloor THEN
+        open doors
+    END IF    
+END SEQUENCE 
 
 SEQUENCE requestFloor  USING requestedElevator
-    closeDoors
-    moveElevator
-    openDoors
+    CALL closeDoors WITH elevatorCageButton AND requestedFloor
+    CALL moveElevator WITH elevatorCageButton 
+    CALL  openDoors WITH currentFloor
 END SEQUENCE 
 
 
