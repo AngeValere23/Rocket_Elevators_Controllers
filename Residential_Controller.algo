@@ -50,7 +50,3 @@ END SEQUENCE
 
 //Scenario 1
 CALL requestElevator WITH 3 AND down
-
-if (call.getType() == 0 && call.getFloor() == this.currentFloor){
-                this.sequence.remove(call);
-            }
