@@ -1,123 +1,191 @@
-direction UP EQUAL 1
-direction DOWN EQUAL O
-
+"Residential object
+	NumberOfColumn = 1
+	NumberOfElevators = 2
+	NumberOfFloors = 10	"
+'------------------------------------------------------ callButton -----------------------------------------------------'
 SEQUENCE callButton USING FloorCallButton AND direction
     SET direction Light Status TO ON WITH FloorCallButton
     IF FloorCallButton is pressed THEN 
         CALL findBestElevator
 END SEQUENCE
+'------------------------------------------------------- /callBtton -----------------------------------------------------'
 
+
+'----------------------------------------------- find the best Elevator----------------------------------------------------'
 SEQUENCE findBestElevator USING currentFloor AND direction
-    FOR all elevator IN column
+    FOR all Elevator IN column
         SET difference between floorCall and currentElevatorFloor
             IF floorCall - currentElevatorFloor is lowest THEN
-                GET elevator ID TO floorCall 
-            ELSE IF elevatorPosition IS EQUAL to floorCall THEN
-                GET elevator ID TO floorCall 
-            ELSE IF  direction EQUAL 1 AND elevatorPosition IS LESS THAN floorCall THEN
-                GET elevator ID TO floorCall 
-            ELSE IF direction EQUAL 0 AND elevatorPosition IS GREATER THAN floorCall THEN
-                GET elevator ID TO floorCall
-            ELSE IF currentElevatorFloor is EMPTY AND elevatorPosition IS NEAR floorCall THEN
-                GET elevator ID TO floorCall
-            ELSE IF currentElevatorFloor is IDLE AND elevatorPosition IS NEAR floorCall THEN
-                GET elevator ID TO floorCall    
-            END IF
-
+                GET Elevator ID 
+            ELSE IF elevatorPosition is equal to floorCall THEN
+                GET Elevator ID 
+            ELSE IF  direction is equal UP AND elevatorPosition IS < THAN floorCall THEN
+                GET Elevator ID  
+            ELSE IF direction is equal DOWN AND elevatorPosition IS > THAN floorCall THEN
+                GET Elevator ID 
+            ELSE IF elevator is EMPTY AND elevatorPosition is NEAR floorCall THEN
+                GET Elevator ID 
+            ELSE IF elevator is IDLE AND elevatorPosition is NEAR floorCall THEN
+                GET Elevator ID 
+            IF directionButton is equal UP AND elevatorDirection IS moving UP THEN
+                GET Elevator ID 
+            ELSE IF directionButton is equal DOWN AND elevatorDirection IS moving down THEN
+                GET this Elevator ID    
+            END IF      
     END FOR 
-    FOR EACH direction
-        SET directionButton TO floorCall WITH GoTo_Direction
-        IF directionButton EQUAL 1 AND elevatorDirection IS moving UP THEN
-            GET this elevator ID 
-        ELSE IF directionButton EQUAL 0 AND elevatorDirection IS moving down THEN
-            GET this elevator ID    
-        END IF    
-        IF FloorCallButton EQUAL pressed THEN
-            IF elevatorPosition IS NEAREST floorCall AND direction is SAME  THEN
-                GET this elevator ID to floorCall
-            ELSE IF elevatorPosition IS HIGHER than floorCall AND direction is SAME THEN
-                GET this elevator ID to floorCall
-        END IF
-
-        FOR EACH elavator IN numberOfElevator
-            SET elevatorPosition to the ground floor
-        END FOR    
+    CALL nearestElevator WITH RequestedFloor AND direction
+    FOR EACH elavator IN column
+        SET elevatorPosition to the ground floor
+    END FOR    
 END SEQUENCE
+'----------------------------------------------- /find the best Elevator-----------------------------------------------------'
 
+
+'----------------------------------------------- The nearest Elevator   -----------------------------------------------------'
+SEQUENCE NearestElevator (RequestedFloor, RequestedDirection)
+    FOR EACH Elevator IN column
+		IF RequestedFloor > CurrentFloor AND direction is Up AND RequestedDirection IS Up THEN
+			GET Elevator ID
+		ELSE IF RequestedFloor < CurrentFloor AND direction is Down AND RequestedDirection IS Down THEN
+            GET Elevator ID
+		END IF
+    END FOR 
+END SEQUENCE
+'----------------------------------------------- /The nearest Elevator   -----------------------------------------------------'
+
+
+'----------------------------------------------- Move Elevator ---------------------------------------------------------------'
 SEQUENCE moveElevator USING FloorCallButton AND direction
     SET FloorCallButton Light Status TO ON WITH GoTo_Direction
         IF FloorCallButton EQUAL pressed AND elevatorPosition IS HIGH THAN currentFloor THEN
-            MOVE ElevatorCage EQUAL 0
-            DISPLAY floorNumber
-        ELSE IF FloorCallButton EQUAL pressed AND elevatorPosition IS LOW THAN currentFloor THEN
-            MOVE ElevatorCage EQUAL 1   
-            DISPLAY floorNumber
+            MOVE ElevatorCage DOWN
+            DISPLAY floorNumber ON Internal AND External Elevator
+        ELSE IF FloorCallButton is equal pressed AND elevatorPosition IS LOW THAN currentFloor THEN
+            MOVE ElevatorCage UP   
+            DISPLAY floorNumber ON Internal AND External Elevator 
         ELSE FloorCallButton EQUAL pressed AND elevatorPosition EQUAL currentFloor THEN
             CALL openDoors 
         END IF   
 END SEQUENCE
+'----------------------------------------------- /Move Elevator -------------------------------------------------------------'
 
+
+'----------------------------------------------- open the elevator door ----------------------------------------------------'
 SEQUENCE openDoors USING FloorCallButton AND currentFloor
     
     IF requestedFloor equal currentFloor THEN
         open doors
-        SET doorsOpen REMAINING TIME = 7 sec
+        SET doorsOpen REMAINING TIME = 5 sec
     ELSE
         close doors     
     END IF
 
 END SEQUENCE 
+'----------------------------------------------- /open the elevator door --------------------------------------------------'
 
 
+
+'------------------------------------------------------- Main Program -------------------------------------------------------'
 SEQUENCE requestElevator USING currentFloor AND direction
     CALL CallButton WITH FloorCallButton AND  direction
     findBestElevator WITH currentFloor AND direction
     CALL moveElevator  WITH floorNumber AND direction
     openDoors  WITH FloorCallButton AND currentFloor
 END SEQUENCE 
+'------------------------------------------------------- /Main Program ------------------------------------------------------'
 
+'--- car call ---'
 SEQUENCE callFloorButton USING elevatorCageButton AND direction
     SET direction Light Status TO ON WITH elevatorCageButton
     IF elevatorCageButton is pressed THEN 
         CALL closeDoors
 END SEQUENCE
+'--- /car call ---'
 
+
+'---------------------------------------------------- close doors when user get in Car --------------------------------------'
 SEQUENCE closeDoors USING elevatorCageButton 
-        FOR all the elevatorCageButton in ElevatorCage
-            IF requestFloorButton equal pressed THEN
-                close the doors
-                CALL moveElevator
-            END IF
-        END FOR        
-END SEQUENCE 
+    FOR all the elevatorCageButton in ElevatorCage
+        SET closeTime TO 5 secondes
+        IF requestFloorButton equal pressed THEN
+            close the doors
+            CALL moveElevator   
+        ELSE IF requestFloorButton IS selected THEN
+            Start closeTimer
+    END FOR    
+    REPEAT
+        SET DoorCheck to FALSE
+        SET WeightCheck to FALSE
+        IF (there is an obstable infront of the door sensor) THEN
+          SET Alarm TO Active 
+        ELSE
+            SET DoorCheck to TRUE
+        ENDIF
 
+        IF (the total weight is greater than the elevator capacity) THEN
+            SET Alarm TO Active 
+        ELSE
+            SET WeightCheck to TRUE
+        ENDIF
+
+        IF Obstructed THEN
+			Call OpenDoors
+    UNTIL DoorCheck and WeightCheck are TRUE       
+END SEQUENCE 
+'-------------------------------------------------- /close doors when user get in Car -------------------------------------'
+
+
+'--------------------------------------------------  move the elevator once again the user get in Car ---------------------'
 SEQUENCE moveElevator USING elevatorCageButton AND requestedFloor
     SET elevatorCageButton Light Status TO ON WITH floorNumber
     WHILE elevatorCageButton equal pressed
-           MOVE ElevatorCageNumber TO requestedFloor
-            DISPLAY currentfloor WITH floorNumber
+           MOVE ElevatorCage TO requestedFloor
+           DISPLAY floorNumber ON Internal AND External Elevator
+        IF Elevator elevatorCageButton is equal requestedFloor THEN
+            CALL StopElevator (Elevator)
+        ELSE IF Elevator is Stopped THEN 
+			CALL OpenDoor (Elevator)
+		END IF    
     END WHILE
 END SEQUENCE 
+'-------------------------------------------------- /move the elevator once again the user get in Car ---------------------'
+
+
+SEQUENCE StopElevator USING Elevator
+	Stop Elevator
+	INIT Timer TO 3 Seconds
+	INIT DoorOpenTimer TO 30 Seconds
+	Elevator Status is Stopped
+	SET Status TO Stopped
+END SEQUENCE
 
 SEQUENCE openDoors USING currentFloor
+    WAIT UNTIL Elevator is Stopped OR Idle 
+        open doors
+        INIT  doorsOpen REMAINING Timer TO 5 Seconds 
+	WHILE REMAINING Timer > 0 Second OR Door is Obstructed 
+		KEEP Door open
+	END WHILE 
     IF requestedFloor equal currentFloor THEN
         open doors
-        SET doorsOpen REMAINING TIME = 3 secondes
     ELSE
         close doors     
     END IF    
 END SEQUENCE 
-
+'-------------------------------------------------------- Main Program -----------------------------------------------------'
 SEQUENCE requestFloor  USING requestedElevator
     CALL callFloorButton WITH elevatorCageButton AND  direction
     closeDoors WITH elevatorCageButton AND requestedFloor
     CALL moveElevator WITH elevatorCageButton 
+    StopElevator WITH Elevator
     CALL  openDoors WITH currentFloor
 END SEQUENCE 
+'------------------------------------------------------ /Main Program -----------------------------------------------------'
 
+"---Scenario 1 ---"
+ CALL requestElevator WITH 3 AND down 
 
-//Scenario 1
-CALL requestElevator WITH 3 AND down
-
-
-
+"Elevator will go to the furthest floorCall
+an elevator call sets direction regardless of direction previously selected. if not then lift continues to landing calls instead.
+the lift will always answer car calls.
+landing calls are answer only in the direction of travael or at the final destination.
