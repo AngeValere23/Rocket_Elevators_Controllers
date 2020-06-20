@@ -1,14 +1,28 @@
-"commercial object
-	NumberOfBattries = 1
-    NumberOfColumn = 4
-	NumberOfElevatorsPerColumn = 3
-	NumberOfFloors = 60
-    NumberOfBasements = 6	
-    Paremeters for each Column [1-4]
-            Columnt A: [1 TO 6]
-            Columnt B: [1 TO 20]
-            Columnt C: [1 and 21 to 40]
-            Columnt D: [1 and 41 to 60] "
+
+"--------- INIT ELEVATORS VALUE ---------"
+SEQUENCE Elevator
+    SET NumberOfFloors TO 60
+    SET direction TO OR Up OR Down
+    INIT ElevatorFloorList TO Array OF number
+    SET ElevatorState Move or IDLE 
+    SET door TO close
+    SET FloorCallButton  TO 
+END SEQUENCE            
+
+SEQUENCE Column
+   
+    Column A: [1 TO 6]
+    Column B: [1 TO 20]
+    Column C: [1 and 21 to 40]
+    Column D: [1 and 41 to 60]
+END SEQUENCE
+
+SEQUENCE Battery USING listOfColumns
+    INIT listColumns TO listOfColumns
+    INIT listOfBattery TO Array OF Battery 
+END SEQUENCE
+"--------- /INIT ELEVATORS VALUE ---------"
+
 '------------------------------------------------------ callButton -----------------------------------------------------'
 SEQUENCE callButton USING FloorCallButton AND RequestedFloor AND direction
     SET direction Light Status TO ON WITH FloorCallButton
@@ -58,6 +72,7 @@ END SEQUENCE
 
 '------------------------------------------------------- find the column -----------------------------------------------------'
 SEQUENCE FindColumn USING FloorCallButton and requestedFloor
+ FOR EACH Column IN Battery listOfColumns
     IF  FloorCallButton OR requestedFloor is a basement THEN
         SET ColumnID to A
     ELSE IF FloorCallButton OR requestedFloor is between 2 and 20 floor THEN
@@ -68,6 +83,7 @@ SEQUENCE FindColumn USING FloorCallButton and requestedFloor
         SET ColumnID to D
     ENDIF
     RETURN ColumnID
+  END FOR  
 END SEQUENCE
 '------------------------------------------------------- /find the column -----------------------------------------------------'
 
@@ -77,7 +93,7 @@ SEQUENCE findBestElevator USING ColumnID AND currentFloor AND direction
     FOR EACH Elevator in ColumnID
 		IF Elevator AND currentFloor is equal 1rst floor AND ElevatorDoor is Open THEN
             GET Elevator ID
-			CALL UpdateList WITH ElevatorFloor AND requestedFloor
+			CALL UpdateList WITH ElevatorFloorList AND requestedFloor
 			RETURN 
         IF Elevator AND currentFloor is equal same floor AND both have same direction AND ElevatorDoor is Open THEN
 			SET GoTo_Direction to 0
@@ -94,10 +110,10 @@ SEQUENCE findBestElevator USING ColumnID AND currentFloor AND direction
         ELSE IF elevator is IDLE AND elevatorPosition is NEAR floorCall THEN
                 GET Elevator ID 
         ELSE IF directionButton is equal UP AND elevatorDirection IS moving UP THEN
-               CALL UpdateList WITH ElevatorFloor AND requestedFloor
+               CALL UpdateList WITH ElevatorFloorList AND requestedFloor
         ELSE IF directionButton is same as ElevatorDirection AND Elevator has not arrived to the floorCall THEN
-            CALL UpdateList WITH ElevatorFloor AND requestedFloor
-            GET Elevator ID
+                CALL UpdateList WITH ElevatorFloorList AND requestedFloor
+                GET Elevator ID
         ELSE IF directionButton is equal DOWN AND elevatorDirection IS moving down THEN
                 GET this Elevator ID    
         END IF      
@@ -108,6 +124,12 @@ SEQUENCE findBestElevator USING ColumnID AND currentFloor AND direction
     END FOR    
 END SEQUENCE
 '----------------------------------------------- /find the best Elevator-----------------------------------------------------'
+"--- Update the elevator List the new stop at the beginning of the list and sort the list"
+SEQUENCE UpdateList USING (ElevatorFloorList AND requestedFloor)			
+	push requestedFloor into the ElevatorFloorList
+	SET i to 1
+	push requestedFloor into the ElevatorFloorList and sort the list
+END SEQUENCE 
 
 
 '----------------------------------------------- The nearest Elevator   -----------------------------------------------------'
@@ -140,28 +162,40 @@ END SEQUENCE
 
 
 '----------------------------------------------- open the elevator door ----------------------------------------------------'
-SEQUENCE openDoors USING FloorCallButton AND currentFloor
-    
+SEQUENCE StopElevator USING Elevator
+	Stop Elevator
+	INIT Timer TO 3 Seconds
+	INIT DoorOpenTimer TO 30 Seconds
+	Elevator Status is Stopped
+	SET Status TO Stopped
+END SEQUENCE
+
+SEQUENCE openDoors USING currentFloor
+    WAIT UNTIL Elevator is Stopped OR Idle 
+        open doors
+        INIT  doorsOpen REMAINING Timer TO 5 Seconds 
+	WHILE REMAINING Timer > 0 Second OR Door is Obstructed 
+		KEEP Door open
+	END WHILE 
     IF requestedFloor equal currentFloor THEN
         open doors
-        SET doorsOpen REMAINING TIME = 5 sec
     ELSE
         close doors     
-    END IF
-
+    END IF    
 END SEQUENCE 
 '----------------------------------------------- /open the elevator door --------------------------------------------------'
 
 
 
 '------------------------------------------------------- Main Program -------------------------------------------------------'
-SEQUENCE requestElevator USING currentFloor AND direction
+SEQUENCE requestElevator USING currentFloor AND direction battery
     CALL CallButton WITH FloorCallButton AND  RequestedFloor
     CALL FindColumn WITH FloorCallButton AND requestedFloor RETURNING ColumnID
-    findBestElevator WITH currentFloor AND direction
+    findBestElevator WITH currentFloor AND ColumnID
     CALL moveElevator  WITH floorNumber AND direction
     openDoors  WITH FloorCallButton AND currentFloor
 END SEQUENCE 
+
 '------------------------------------------------------- /Main Program ------------------------------------------------------'
 
 '--- car call ---'
@@ -212,36 +246,15 @@ SEQUENCE moveElevator USING elevatorCageButton AND requestedFloor
            MOVE ElevatorCage TO requestedFloor
            DISPLAY floorNumber ON Internal AND External Elevator
         IF Elevator elevatorCageButton is equal requestedFloor THEN
-            CALL StopElevator (Elevator)
+            CALL StopElevator WITH Elevator
         ELSE IF Elevator is Stopped THEN 
-			CALL OpenDoor (Elevator)
+			CALL OpenDoor WITH currentFloor
 		END IF    
     END WHILE
 END SEQUENCE 
 '-------------------------------------------------- /move the elevator once again the user get in Car ---------------------'
 
 
-SEQUENCE StopElevator USING Elevator
-	Stop Elevator
-	INIT Timer TO 3 Seconds
-	INIT DoorOpenTimer TO 30 Seconds
-	Elevator Status is Stopped
-	SET Status TO Stopped
-END SEQUENCE
-
-SEQUENCE openDoors USING currentFloor
-    WAIT UNTIL Elevator is Stopped OR Idle 
-        open doors
-        INIT  doorsOpen REMAINING Timer TO 5 Seconds 
-	WHILE REMAINING Timer > 0 Second OR Door is Obstructed 
-		KEEP Door open
-	END WHILE 
-    IF requestedFloor equal currentFloor THEN
-        open doors
-    ELSE
-        close doors     
-    END IF    
-END SEQUENCE 
 '-------------------------------------------------------- Main Program -----------------------------------------------------'
 SEQUENCE requestFloor  USING requestedElevator
     CALL callFloorButton WITH elevatorCageButton AND  direction
