@@ -68,28 +68,22 @@ function findBestElevator(RequestedFloor, direction){
     var BestElevator;
 
     for (var i = 1; i <= this.elevatorList; i++){ 
-        if(elevator.currentFloor == RequestedFloor && elevator.Direction == direction){
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
+        if(elevator.currentFloor == RequestedFloor && elevator.Direction == direction){           
             BestElevator = elevator;
         }
-        else if(elevator.currentFloor > requestedFloor && elevator.Direction ==='idle'){
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
+        else if(elevator.currentFloor > requestedFloor && elevator.Direction ==='idle'){           
             BestElevator = elevator;
         }
         else if(direction === 'UP' && elevator.currentFloor < requestedFloor){
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
             BestElevator = elevator;
         }
         else if(direction === 'down' && elevator.currentFloor > requestedFloor){
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
             BestElevator = elevator;
         }
         else if(direction === 'down' && elevator.Direction === 'down'){
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
             BestElevator = elevator;
         }
         else if(direction === 'up' && elevator.Direction === 'up'){
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
             BestElevator = elevator;
         }
         else{
@@ -117,26 +111,58 @@ class Controller {
      RequestElevator(RequestedFloor, direction){
         var BestElevator = this.findBestElevator(RequestedFloor, direction)
         BestElevator.elevatorRequestList.push(requestedFloor);
-        //console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
+        console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
         
     }
 
     RequestFloor(Elevator, RequestedFloor){
         Elevator.elevatorRequestList.push(RequestedFloor)
         Elevator.elevatorRequestList.sort();
-        
-        
+        this.move(elevator);
+        return;    
     }
 }
-
+//Here's the steps to move the elevator once the user is in the elevator
+function moveElevator(elevator){
+    while (elevator.elevatorRequestList[0] > 0){
+        if (elevator.elevatorRequestList[0] > elevator.currentFloor){
+            elevator.Direction = 'UP';
+            while (elevator.currentFloor < elevator.elevatorRequestList[0]){
+                elevator.currentFloor ++;
+                console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor);
+                if (elevator.currentFloor == this.colum){
+                    elevator.Direction === 'IDLE';
+                }
+            }
+            elevator.Door === 'OPEN';
+            console.log('Door is open');
+        }
+        else {
+            elevator.Direction = 'DOWN';
+            while (elevator.currentFloor > elevator.elevatorRequestList[0]){
+                elevator.currentFloor -= 1;
+                console.log('Elevator ' + elevator.ID + ' is at floor ' + elevator.currentFloor);
+                if (elevator.currentFloor == 1){
+                    elevator.Direction = 'IDLE';
+                }
+            }
+            elevator.Door = 'OPEN';
+            console.log('Door is open');
+        }
+        
+        elevator.Door = 'CLOSED';
+        console.log('Door is closed');
+        elevator.Direction = 'IDLE';
+    }
+}
 // --- Scenarios ---
 
     console.log('******************* ******************* *******************');
     console.log('*******************  Just  Litlle Test  *******************');
     console.log('******************* ******************* *******************');
-    /*test = new Column(2, 6);
+    test = new Column(2, 6);
     console.log(test);
-    test1 = new RequestElevator(3, 'DOWN')
+    test1 = new Controller(3, 'DOWN')
     console.log(test1);
     test3 = new findBestElevator(5,'UP')
     console.log(test3)
@@ -148,5 +174,8 @@ class Controller {
    column.elevatorList[0].currentFloor = 2;
    column.elevatorList[1].currentDirection = 'idle';
    column.elevatorList[1].currentFloor = 6;
-   console.log(column)*/
+   console.log(column)
+
+   console.log(moveElevator (2));
+
     
