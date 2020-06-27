@@ -23,14 +23,14 @@ class Button {
 }
 
 class Elevator {
-    constructor(elevatorID, numberOfFloors){
+    constructor(elevatorID, nbFloor){
         this.elevatorID = elevatorID;
         this.currentFloor = 1;
         this.Direction = 'UP';
         this.RequestList = [];
         this.FloorCallButton = [];
         this.Door = 'CLOSED';
-        for (var i = 1; i <= numberOfFloors; i++){
+        for (var i = 1; i <= nbFloor; i++){
             this.FloorCallButton.push(i);
         }
     }
@@ -82,9 +82,10 @@ class Column {
     nearestElevator (elevatorList, userCurrentFloor){
         var distance = Column.floorList;
         var bestNearestElevator;
-        for (let i = 0; i < elevatorList.length; i++) {
+        for (let i = 0; i < elevatorList; i++) {
             const elevator = elevatorList[i];
             if (Math.abs(elevator.currentFloor - userCurrentFloor) < distance){                
+                bestNearestElevator = elevator;
             }
         }
             return bestNearestElevator;
@@ -133,7 +134,7 @@ class Column {
             var BestElevator = null ;
 
        for (let elevator of this.elevatorList) {
-            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + elevator.currentFloor + ' floor and its direction is ' + elevator.Direction);
+            console.log("The Elevator #" + elevator.elevatorID + " is now at floor "  + RequestedFloor + ' floor and its direction is ' + direction);
             if (elevator.currentFloor == RequestedFloor && elevator.Direction == direction){
                 if (elevator.Door == 'OPEN'){
                     this.UpdateList(elevator.RequestList, RequestedFloor);
@@ -157,7 +158,7 @@ class Column {
                 BestElevator = elevator;
             }
             else{
-                BestElevator = this.nearestElevator( RequestedFloor, direction);
+                BestElevator = this.nearestElevator( BestElevator, direction);
                 this.UpdateList(this.RequestList, RequestedFloor);
                 console.log("The elevator No : " + elevator.elevatorID + ' is comming!');
                 return BestElevator;
@@ -167,8 +168,7 @@ class Column {
         }
         
     }
-    RequestFloor(elevator, RequestedFloor){
-        console.log("The user is at floor " + RequestedFloor + " and is going "  + Direction); 
+    RequestFloor(elevator, RequestedFloor){ 
         this.UpdateList(elevator, RequestedFloor);
 
         //Here's the steps to move the elevator once the user is in the elevator
@@ -183,7 +183,7 @@ class Column {
                     }
                 }
                 Elevator.Door = 'OPEN';
-                console.log('Door is open');
+                console.log('Door is opened');
                 
             }
             else {
@@ -209,88 +209,45 @@ class Column {
 
 
 // --- /Classes ----   
-// --- Scenarios ---
+// --- Scenarios ---    
 function Scenario1(){
-    console.log('******************* ******************* *******************');
-    console.log('*******************      Scenario 1     *******************');
-    console.log('******************* ******************* *******************');
-    column = new Column(1, 10, 2);
-    column.elevatorList[0].currentFloor = 2;
-    column.elevatorList[0].Direction = 'IDLE';
-    column.elevatorList[1].currentFloor = 6;
-    column.elevatorList[1].Direction = 'IDLE';
-    console.log('******************* USER-1 goes from floor 3 to floor 7  *******************');
-    RequestedFloor = 3;
-    Direction = 'UP';
-    elevatorList = [1, 2];
-    column.RequestElevator(RequestedFloor, Direction);
-    column.nearestElevator(elevatorList, 3);
-    column.RequestFloor(1, 7);
-    
-}
-function Scenario2(){
     console.log('******************* ******************* *******************');
     console.log('*******************      Scenario 2     *******************');
     console.log('******************* ******************* *******************');
-    column2 = new Column(1, 10, 2);
-    column2.elevatorList[0].currentFloor = 1;
-    column2.elevatorList[0].Direction = 'IDLE';
-    column2.elevatorList[1].currentFloor = 7;
-    column2.elevatorList[1].Direction = 'IDLE';
+    column1 = new Column(1, 10, 2);
+
+    column1.elevatorList[0].currentFloor = 1;
+    column1.elevatorList[0].Direction = 'IDLE';
+    column1.elevatorList[1].currentFloor = 7;
+    column1.elevatorList[1].Direction = 'IDLE';
     console.log('******************* USER-1 goes from floor 1 to floor 6  *******************');
     RequestedFloor = 2;
     Direction = 'DOWN';
     Destination = 6;
     elevatorList = [1, 2];
-    column2.RequestElevator(RequestedFloor, Direction);
-    column2.nearestElevator(elevatorList, 1);
-    column2.RequestFloor(2, 7);
-    console.log('******************* USER-2 goes from floor 3 to floor 5  *******************');
-    RequestedFloor = 3;
-    Direction = 'UP';
-    Destination = 5;
-    elevatorList = [1, 2];
-    column2.RequestElevator(RequestedFloor, Direction);
-    column2.nearestElevator(elevatorList, Destination);
-    column2.RequestFloor(1, 5);
+    column1.RequestElevator(RequestedFloor, Direction);
+    column1.nearestElevator(elevatorList, 1);
+    column1.RequestFloor(2, 7);
     console.log('******************* USER-3 goes from floor 9 to floor 2  *******************');
     RequestedFloor = 9;
     Direction = 'DOWN';
     Destination = 2;
     elevatorList = [1, 2];
-    column2.RequestElevator(RequestedFloor, Direction);
-    column2.nearestElevator(elevatorList, 9);
-    column2.RequestFloor(2, 2);
+    column1.RequestElevator(RequestedFloor, Direction);
+    column1.nearestElevator(elevatorList, 9);
+    column1.RequestFloor(2, 2);
 }
-function Scenario3(){
-    console.log('******************* ******************* *******************');
-    console.log('*******************      Scenario 3     *******************');
-    console.log('******************* ******************* *******************');
-    column3 = new Column(1, 10, 2);
-    column3.elevatorList[0].currentFloor = 10;
-    column3.elevatorList[0].Direction = 'IDLE';
-    column3.elevatorList[1].currentFloor = 3;
-    column3.elevatorList[1].Direction = 'UP';
-    console.log('******************* USER-1 goes from floor 3 to floor 2  *******************');
-    RequestedFloor = 3;
-    Direction = 'DOWN';
-    Destination = 2;
-    elevatorList = [1, 2];
-    column3.RequestElevator(RequestedFloor, Direction);
-    column3.nearestElevator(elevatorList, 3);
-    column3.RequestFloor(1, 2);
-    column3.elevatorList[1];
-    console.log('******************* USER-2 goes from floor 10 to floor 3  *******************');
-    RequestedFloor = 10;
-    Direction = 'UP';
-    Destination = 3;
-    elevatorList = [1, 2];
-    column3.RequestElevator(RequestedFloor, Direction);
-    column3.nearestElevator(elevatorList, 10);
-    column3.RequestFloor(2, 3);
-}
+
+/*column = new Column(1, 10, 2);
+best = column.findBestElevator(3, 'DOWN')
+console.log(best)
+best2 = column.findBestElevator(6, 'UP')
+console.log(best2)
+
+elevator = column.RequestFloor(1, 7)
+console.log(elevator)
+console.log(column)*/
 //  --- /Scenarios---
 
-//Scenario1();
- Scenario2();
- //Scenario3();
+Scenario1();
+
