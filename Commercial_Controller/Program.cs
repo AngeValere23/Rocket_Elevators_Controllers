@@ -144,8 +144,8 @@ namespace Commercial_Controller
             }
             Scenario1();
             Scenario2();
-            //Scenario3();
-            //Scenario4();
+            Scenario3();
+            Scenario4();
         }
     }
 }

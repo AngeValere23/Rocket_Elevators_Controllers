@@ -7,7 +7,7 @@ namespace Commercial_Controller
     class Elevator{
         public int ID;
         public int currentFloor;
-        public string direction = "IDLE";
+        public string direction = "UP";
         public List<int> requestList;
         public List<int> floorList;
         public string door = "CLOSED";

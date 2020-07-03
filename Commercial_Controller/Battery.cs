@@ -64,6 +64,7 @@ namespace Commercial_Controller
               Console.WriteLine();
         }
 
+        //Update the list of the elevator in each use and after sort them
         public void UpdateList (Elevator elevator, List<int> List, int currentFloor)
         {
             bool check = true;
@@ -81,6 +82,38 @@ namespace Commercial_Controller
             }
         }
 
+        // Calculate the gap and find the nearest elevator and the  lowest distance 
+        // between the Elevator current floor and the user current floor
+        public int calculateGap (Elevator elevator, int UserCurrentFloor, string UserDirection)
+        {
+            if (elevator.direction != "IDLE" | elevator.requestList.Count != 0)
+            {
+                if (elevator.direction == UserDirection)
+                {
+                    if (elevator.direction == "UP" && elevator.currentFloor <= UserCurrentFloor) 
+                    {
+                        return Math.Abs(elevator.currentFloor - UserCurrentFloor);
+                    }
+                    else if (elevator.direction == "DOWN" && elevator.currentFloor >= UserCurrentFloor)
+                    {
+                        return Math.Abs(elevator.currentFloor - UserCurrentFloor);
+                    }
+                    else
+                    {
+                        return Math.Abs(elevator.requestList.Last() - elevator.currentFloor) + Math.Abs(elevator.requestList.Last() - UserCurrentFloor);    
+                    }
+                }
+                else
+                {
+                    return Math.Abs(elevator.requestList.Last() - elevator.currentFloor) + Math.Abs(elevator.requestList.Last() - UserCurrentFloor);;    
+                }
+            }
+            else 
+            {
+                return Math.Abs(elevator.currentFloor - UserCurrentFloor);
+            }
+        }
+
 
         /*  Method 1: RequestElevator (FloorNumber)
         *   This method represents an elevator request on a floor or basement.
@@ -88,7 +121,7 @@ namespace Commercial_Controller
         *   elevator should be expected to pick the user up at his currentFloor
         *   and bring him back to the 1st floor.
         */
-        public void RequestElevator(int FloorNumber){
+         public void RequestElevator(int FloorNumber){
             Column currentColumn = this.columnList[0];
 
             // Here is Finding the best column in columnList
@@ -109,11 +142,11 @@ namespace Commercial_Controller
                 direction = "DOWN";
             }
             Console.WriteLine("Current columnID " + currentColumn.ID + " which is from floor " + currentColumn.floorList[1] + " is goind to floor " + currentColumn.floorList.Last());
-            // finding the nearest elevator by comparing destination AND elevator down: 
+            // finding the nearest elevator by comparing gap AND elevator down: 
             //      1- the moving elevator which is arriving to the user
             //      2- the IDLE elevator
             //      3- other elevators
-            int destination = 1000;
+            int gap = 1000;
             int distance;
             /*  Define the best elevator which down and ready to serve in the 
             *   Elevator List and get the best one in the column of elevatorList
@@ -131,6 +164,7 @@ namespace Commercial_Controller
                     currentDestination = elevator.requestList.Last();
                 }
                 Console.WriteLine("ElevatorID : " + elevator.ID + ", Elevator Position = " + elevator.currentFloor + ", Elevator direction = " + elevator.direction + " and current destination is " + currentDestination);
+                distance = calculateGap(elevator, FloorNumber, direction);
                 if (elevator.direction == direction){
                     if ((direction == "UP" && elevator.currentFloor <= FloorNumber)|(direction == "DOWN" && elevator.currentFloor >= FloorNumber)){
                         FirstElevatorDown.Add(elevator);
@@ -146,38 +180,39 @@ namespace Commercial_Controller
             if(FirstElevatorDown.Count > 0){
                 foreach (Elevator elevator in FirstElevatorDown)
                 {
-                     distance = 1;
+                     distance = calculateGap(elevator, FloorNumber, direction);
                            
-                    if ( distance <= destination)
+                    if ( distance <= gap)
                     {
-                        destination = distance;
+                        gap = distance;
                         BestElevator = elevator;
                     }
                 }
             }
             else if (SecondElevatorDown.Count > 0){
                 foreach (Elevator elevator in SecondElevatorDown){
-                    distance = 1;
+                    distance = calculateGap(elevator, FloorNumber, direction);
                          
-                    if ( distance <= destination)
+                    if ( distance <= gap)
                     {
-                        destination = distance;
+                        gap = distance;
                         BestElevator = elevator;
                     }
                 }
             }
             else{
                 foreach (Elevator elevator in ThirdElevatorDown){
-                    distance = 1;
+                     distance = calculateGap(elevator, FloorNumber, direction);
        
-                    if ( distance <= destination)
+                    if ( distance <= gap)
                     {
-                        destination = distance;
+                        gap = distance;
                         BestElevator = elevator;
                     }
                 }
             }   
-                Console.WriteLine("The best ElevatorID is " + BestElevator.ID);
+
+            Console.WriteLine("The best ElevatorID is " + BestElevator.ID);
             //  Updating the RequestList of the selected elevator
             if (BestElevator.direction == direction && BestElevator.direction == "IDLE"){
                 if (BestElevator.direction == "DOWN" && BestElevator.currentFloor >= FloorNumber){
@@ -200,21 +235,6 @@ namespace Commercial_Controller
                     UpdateList(BestElevator, BestElevator.requestList, 1);
                     Console.WriteLine("Go and Take the column " + currentColumn.ID + ", and the nearest elevator " + BestElevator.ID);
                     moveElevator(BestElevator);
-                }
-                else{
-                    Console.WriteLine("Take the column " +  currentColumn.ID + " and ElevatorID: " + BestElevator.ID +  " which is currently at floor" + BestElevator.currentFloor);
-                    UpdateList(BestElevator, BestElevator.BufferList, FloorNumber);
-                    UpdateList(BestElevator, BestElevator.BufferList, 1);
-                    Console.WriteLine("Go and Take the column " + currentColumn.ID + ", and the nearest elevator " + BestElevator.ID);
-                 
-                    if (FloorNumber > 1){
-                        BestElevator.BufferDirection = "DOWN";
-                        moveElevator(BestElevator);
-                    }
-                    else{
-                        BestElevator.BufferDirection = "UP";
-                        moveElevator(BestElevator);
-                    }
                 }
             } 
             else{
@@ -259,13 +279,25 @@ namespace Commercial_Controller
             Console.WriteLine();
             Console.WriteLine("3- Here the column has been choosen. The first one which match to the same direction as the User");
             Console.WriteLine("the columnID for floor " + RequestedFloor + " is " + currentColumn.ID + "\n"); 
-            int destination = 1000;
+            int gap = 1000;
+            int distance;
             Elevator BestElevator = currentColumn.elevatorList[0];
+
+            string UserDirection;
+           if (RequestedFloor > 1)
+           {
+               UserDirection = "UP";
+           }
+           else
+           {
+               UserDirection = "DOWN";
+           }
 
             // Finding the best elevator 
             Console.WriteLine("4- Here the method findBestElevator is deployed, findind de best Elevator in column's elevatorList ");
             foreach(Elevator elevator in currentColumn.elevatorList)
-            {    int distance = 1;
+            {    
+                
                     int currentDestination;
                     if (elevator.direction == "IDLE")
                     {
@@ -276,11 +308,11 @@ namespace Commercial_Controller
                         currentDestination = elevator.requestList.Last();
                     }
                     Console.WriteLine("ElevatorID : " + elevator.ID + ", Elevator Position = " + elevator.currentFloor + ", Elevator direction = " + elevator.direction + " and current destination is " + currentDestination);
-
-                            
-                    if ( distance <= destination)
+                
+                    distance = calculateGap(elevator, 1, UserDirection);      
+                    if ( distance <= gap)
                     {
-                        destination = distance;
+                        gap = distance;
                         BestElevator = elevator;
                     }
             }
@@ -299,7 +331,7 @@ namespace Commercial_Controller
                     Console.WriteLine("The nearest ElevatorID is " + BestElevator.ID);
                     UpdateList(BestElevator, BestElevator.BufferList, RequestedFloor);
                     // Setting Buffer direction For Basements
-                    if (RequestedFloor >= 1)
+                    if (RequestedFloor > 1)
                     {
                         BestElevator.BufferDirection = "DOWN";
                     }
@@ -312,6 +344,7 @@ namespace Commercial_Controller
             moveElevator(BestElevator);
         }
         
+        // Here's the steps to move the elevator once the user is in the elevator
         public void moveElevator(Elevator elevator)
         {
             while (elevator.requestList.Count > 0)
@@ -323,7 +356,7 @@ namespace Commercial_Controller
                     Console.WriteLine("6- The Elevator is moving to pick up the User and go to his destination");
                     while (elevator.currentFloor < elevator.requestList[0])
                     {
-                        elevator.currentFloor += 1;
+                        elevator.currentFloor ++;
                         if (elevator.currentFloor != 0)
                         {
                             Console.WriteLine("Elevator " + elevator.ID + " is at floor " + elevator.currentFloor);
@@ -344,7 +377,7 @@ namespace Commercial_Controller
                     Console.WriteLine("7- The Elevator is moving to pick up the User and go to his destination");
                     while (elevator.currentFloor > elevator.requestList.Last())
                     {
-                        elevator.currentFloor -= 1;
+                        elevator.currentFloor --;
                         if (elevator.currentFloor != 0)
                         {
                             Console.WriteLine("Elevator " + elevator.ID + " is at floor " + elevator.currentFloor);
