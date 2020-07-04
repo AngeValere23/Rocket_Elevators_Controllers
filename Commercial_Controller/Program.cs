@@ -86,28 +86,28 @@ namespace Commercial_Controller
                 Console.WriteLine("*******************      Scenario 3     *******************" + "\n");
                 Console.WriteLine("******** User at floor 54. He goes Down to floor 1 ********");
                 Console.WriteLine("*********** Elevator 1 from Column 4 is expected **********" + "\n");
-                Battery Battery2 = new Battery(4, 66, 6, 5);
+                Battery Battery3 = new Battery(4, 66, 6, 5);
                 // Initializing Elevator 1 of Column 3
-                Battery2.columnList[3].elevatorList[0].currentFloor = 58;
-                Battery2.columnList[3].elevatorList[0].direction = "DOWN";
-                Battery2.columnList[3].elevatorList[0].requestList.Add(1);
+                Battery3.columnList[3].elevatorList[0].currentFloor = 58;
+                Battery3.columnList[3].elevatorList[0].direction = "DOWN";
+                Battery3.columnList[3].elevatorList[0].requestList.Add(1);
                 // Initializing Elevator 2 of Column 3
-                Battery2.columnList[3].elevatorList[1].currentFloor = 50;
-                Battery2.columnList[3].elevatorList[1].direction = "UP";
-                Battery2.columnList[3].elevatorList[1].requestList.Add(60);
+                Battery3.columnList[3].elevatorList[1].currentFloor = 50;
+                Battery3.columnList[3].elevatorList[1].direction = "UP";
+                Battery3.columnList[3].elevatorList[1].requestList.Add(60);
                 // // Initializing Elevator 3 of Column 3
-                Battery2.columnList[3].elevatorList[2].currentFloor = 46;
-                Battery2.columnList[3].elevatorList[2].direction = "DOWN";
-                Battery2.columnList[3].elevatorList[2].requestList.Add(58);
+                Battery3.columnList[3].elevatorList[2].currentFloor = 46;
+                Battery3.columnList[3].elevatorList[2].direction = "DOWN";
+                Battery3.columnList[3].elevatorList[2].requestList.Add(58);
                 // // Initializing Elevator 4 of Column 3
-                Battery2.columnList[3].elevatorList[3].currentFloor = 1;
-                Battery2.columnList[3].elevatorList[3].direction = "DOWN";
-                Battery2.columnList[3].elevatorList[3].requestList.Add(54);
+                Battery3.columnList[3].elevatorList[3].currentFloor = 1;
+                Battery3.columnList[3].elevatorList[3].direction = "DOWN";
+                Battery3.columnList[3].elevatorList[3].requestList.Add(54);
                 // // Initializing Elevator 5 of Column 3
-                Battery2.columnList[3].elevatorList[4].currentFloor = 60;
-                Battery2.columnList[3].elevatorList[4].direction = "DOWN";
-                Battery2.columnList[3].elevatorList[4].requestList.Add(1);
-                Battery2.RequestElevator(54);
+                Battery3.columnList[3].elevatorList[4].currentFloor = 60;
+                Battery3.columnList[3].elevatorList[4].direction = "DOWN";
+                Battery3.columnList[3].elevatorList[4].requestList.Add(1);
+                Battery3.RequestElevator(54);
                 
             }
 
@@ -118,34 +118,34 @@ namespace Commercial_Controller
                 Console.WriteLine("*******************      Scenario 4     *******************" + "\n");
                 Console.WriteLine("******** User at floor -3. He goes UP to floor 1 **********");
                 Console.WriteLine("*********** Elevator 4 from Column 1 is expected **********" + "\n");
-                Battery Battery2 = new Battery(4, 66, 6, 5);
-                // Initializing Elevator 1 of Column 3
-                Battery2.columnList[0].elevatorList[0].currentFloor = -4;
-                Battery2.columnList[0].elevatorList[0].direction = "IDLE";
+                Battery Battery4 = new Battery(4, 66, 6, 5);
+                // Initializing Elevator 1 of Column 1
+                Battery4.columnList[0].elevatorList[0].currentFloor = -4;
+                Battery4.columnList[0].elevatorList[0].direction = "IDLE";
                 //Battery2.columnList[0].elevatorList[0].requestList.Add();
-                // Initializing Elevator 2 of Column 3
-                Battery2.columnList[0].elevatorList[1].currentFloor = 1;
-                Battery2.columnList[0].elevatorList[1].direction = "IDLE";
+                // Initializing Elevator 2 of Column 1
+                Battery4.columnList[0].elevatorList[1].currentFloor = 1;
+                Battery4.columnList[0].elevatorList[1].direction = "IDLE";
                 //Battery2.columnList[0].elevatorList[1].requestList.Add(28);
-                // // Initializing Elevator 3 of Column 3
-                Battery2.columnList[0].elevatorList[2].currentFloor = -3;
-                Battery2.columnList[0].elevatorList[2].direction = "DOWN";
-                Battery2.columnList[0].elevatorList[2].requestList.Add(-5);
-                // // Initializing Elevator 4 of Column 3
-                Battery2.columnList[0].elevatorList[3].currentFloor = -6;
-                Battery2.columnList[0].elevatorList[3].direction = "UP";
-                Battery2.columnList[0].elevatorList[3].requestList.Add(1);
-                // // Initializing Elevator 5 of Column 3
-                Battery2.columnList[0].elevatorList[4].currentFloor = -1;
-                Battery2.columnList[0].elevatorList[4].direction = "DOWN";
-                Battery2.columnList[0].elevatorList[4].requestList.Add(-6);
-                Battery2.RequestElevator(-3);
+                // // Initializing Elevator 3 of Column 1
+                Battery4.columnList[0].elevatorList[2].currentFloor = -3;
+                Battery4.columnList[0].elevatorList[2].direction = "DOWN";
+                Battery4.columnList[0].elevatorList[2].requestList.Add(-5);
+                // // Initializing Elevator 4 of Column 1
+                Battery4.columnList[0].elevatorList[3].currentFloor = -6;
+                Battery4.columnList[0].elevatorList[3].direction = "UP";
+                Battery4.columnList[0].elevatorList[3].requestList.Add(1);
+                // // Initializing Elevator 5 of Column 1
+                Battery4.columnList[0].elevatorList[4].currentFloor = -1;
+                Battery4.columnList[0].elevatorList[4].direction = "DOWN";
+                Battery4.columnList[0].elevatorList[4].requestList.Add(-6);
+                Battery4.RequestElevator(-3);
                 
             }
             Scenario1();
-            Scenario2();
-            Scenario3();
-            Scenario4();
+            //Scenario2();
+            //Scenario3();
+            //Scenario4();
         }
     }
 }
