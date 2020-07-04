@@ -541,23 +541,23 @@ func Scenario3() {
 	fmt.Println("*********** Elevator 1 from Column 4 is expected **********")
 	fmt.Println("******************* ******************* *******************")
 	Battery3 := battery(4, 66, 6, 5)
-	// Initializing Elevator 1 of Column 3
+	// Initializing Elevator 1 of Column 4
 	Battery3.columnList[3].elevatorList[0].currentFloor = 58
 	Battery3.columnList[3].elevatorList[0].direction = "DOWN"
 	Battery3.columnList[3].elevatorList[0].requestList = append(Battery3.columnList[3].elevatorList[0].requestList, 1)
-	// Initializing Elevator 2 of Column 3
+	// Initializing Elevator 2 of Column 4
 	Battery3.columnList[3].elevatorList[1].currentFloor = 50
 	Battery3.columnList[3].elevatorList[1].direction = "UP"
 	Battery3.columnList[3].elevatorList[1].requestList = append(Battery3.columnList[3].elevatorList[1].requestList, 60)
-	// // Initializing Elevator 3 of Column 3
+	// // Initializing Elevator 3 of Column 4
 	Battery3.columnList[3].elevatorList[2].currentFloor = 46
 	Battery3.columnList[3].elevatorList[2].direction = "UP"
 	Battery3.columnList[3].elevatorList[2].requestList = append(Battery3.columnList[3].elevatorList[2].requestList, 58)
-	// // Initializing Elevator 4 of Column 3
+	// // Initializing Elevator 4 of Column 4
 	Battery3.columnList[3].elevatorList[3].currentFloor = 1
 	Battery3.columnList[3].elevatorList[3].direction = "UP"
 	Battery3.columnList[3].elevatorList[3].requestList = append(Battery3.columnList[3].elevatorList[3].requestList, 54)
-	// // Initializing Elevator 5 of Column 3
+	// // Initializing Elevator 5 of Column 4
 	Battery3.columnList[3].elevatorList[4].currentFloor = 60
 	Battery3.columnList[3].elevatorList[4].direction = "DOWN"
 	Battery3.columnList[3].elevatorList[4].requestList = append(Battery3.columnList[3].elevatorList[4].requestList, 1)
@@ -574,23 +574,23 @@ func Scenario4() {
 	fmt.Println("*********** Elevator 4 from Column 1 is expected **********")
 	fmt.Println("******************* ******************* *******************")
 	Battery4 := battery(4, 66, 6, 5)
-	// Initializing Elevator 1 of Column 4
+	// Initializing Elevator 1 of Column 1
 	Battery4.columnList[0].elevatorList[0].currentFloor = -4
 	Battery4.columnList[0].elevatorList[0].direction = "IDLE"
 	// Battery4.ColumnList[0].ElevatorList[0].StopList = append(Battery4.ColumnList[0].ElevatorList[0].StopList, 1)
-	// Initializing Elevator 2 of Column 4
+	// Initializing Elevator 2 of Column 1
 	Battery4.columnList[0].elevatorList[1].currentFloor = 1
 	Battery4.columnList[0].elevatorList[1].direction = "IDLE"
 	// Battery4.ColumnList[0].ElevatorList[1].StopList = append(Battery4.ColumnList[0].ElevatorList[1].StopList, );
-	// // Initializing Elevator 3 of Column 4
+	// // Initializing Elevator 3 of Column 1
 	Battery4.columnList[0].elevatorList[2].currentFloor = -3
 	Battery4.columnList[0].elevatorList[2].direction = "DOWN"
 	Battery4.columnList[0].elevatorList[2].requestList = append(Battery4.columnList[0].elevatorList[2].requestList, -5)
-	// // Initializing Elevator 4 of Column 4
+	// // Initializing Elevator 4 of Column 1
 	Battery4.columnList[0].elevatorList[3].currentFloor = -6
 	Battery4.columnList[0].elevatorList[3].direction = "UP"
 	Battery4.columnList[0].elevatorList[3].requestList = append(Battery4.columnList[0].elevatorList[3].requestList, 1)
-	// // Initializing Elevator 5 of Column 4
+	// // Initializing Elevator 5 of Column 1
 	Battery4.columnList[0].elevatorList[4].currentFloor = -1
 	Battery4.columnList[0].elevatorList[4].direction = "DOWN"
 	Battery4.columnList[0].elevatorList[4].requestList = append(Battery4.columnList[0].elevatorList[4].requestList, -6)
@@ -599,8 +599,8 @@ func Scenario4() {
 func main() {
 
 	Scenario1()
-	Scenario2()
-	Scenario3()
-	Scenario4()
+	//Scenario2()
+	//Scenario3()
+	//Scenario4()
 
 }
